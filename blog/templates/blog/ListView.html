@@ -1,0 +1,11 @@
+{% extends 'blog/base.html' %}
+
+{%block content%}
+<small>Sweeti has written {{ blogs.count }} blog{{ blogs | pluralize }}</small>
+<hr>
+  {% for blog in blogs %}<br>
+      <h3><a href="{%url 'DetailView' blog.id %}">{{blog.title|title}}</a></h3>
+      {{blog.date_time|date:"Y M d"}}
+      <p>{{blog.content|truncatechars:30|safe}}</p>
+  {% endfor %}
+{%endblock%}
