@@ -1,17 +1,40 @@
 from django.shortcuts import render, redirect, get_object_or_404
 
-from .models import Blog
-from .forms import BlogForm
+from django.views.generic import (
+        ListView, DetailView, CreateView, UpdateView, DeleteView)
 
-from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.contrib.auth.decorators import login_required
+
+from django.contrib import messages
+
+from django.db.models import Q
+
+from django.contrib.auth.models import User
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth import login, authenticate
+
+from django.contrib.auth import update_session_auth_hash
+from django.contrib.auth.forms import PasswordChangeForm
+
+from .models import Blog
+from .forms import BlogForm, UserUpdateForm, ProfileUpdateForm
+
+
+
+
+
 
 # DetailView/ DeleteView (similar)
 # CreateView/ UpdateView (similar)
 
 class List_View(ListView):
-    queryset = Blog.objects.order_by('-date_time')
+    model = Blog
+    queryset = Blog.objects.order_by('-posted_date')
+    # ordering = ['-posted_date'] #same as above
     template_name = 'blog/ListView.html'
     context_object_name = 'blogs'
+    paginate_by = 4
 
 
 class Detail_View(DetailView):
@@ -26,15 +49,21 @@ class Detail_View(DetailView):
         return get_object_or_404(Blog, id=id)
 
 
-class Delete_View(DeleteView):
+class Delete_View(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     model = Blog #model/queryset is same thing(equivalent)
     template_name = 'blog/DeleteView.html'
-    success_url = '/'
+    success_url = '/myBlog'
+
+    def test_func(self):
+        blog = self.get_object()
+        if self.request.user == blog.author:
+            return True
+        return False
 
 
-class Create_View(CreateView):
+class Create_View(LoginRequiredMixin, CreateView):
     form_class = BlogForm
-    template_name = 'blog/CreateView.html'
+    template_name = 'blog/FormView.html'
     context_object_name = 'form'
     # success_url = 'list'
     # another way to override success_url(default -- get_absolute_url)
@@ -43,18 +72,134 @@ class Create_View(CreateView):
     # validate all the fields in forms.py
     # Another way to check
     def form_valid(self, form):
+        form.instance.author = self.request.user
         return super().form_valid(form)
 
 
-class Update_View(UpdateView):
+class Update_View(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     form_class = BlogForm
-    template_name = 'blog/CreateView.html'
+    template_name = 'blog/FormView.html'
     context_object_name = 'form'
-    success_url = '/'
+    success_url = '/myBlog'
 
     def get_object(self):
         id = self.kwargs.get('pk')
         return get_object_or_404(Blog, id=id)
+
+    def test_func(self):
+        blog = self.get_object()
+        if self.request.user == blog.author:
+            return True
+        return False
+
+
+def register(request):
+    if request.method == 'POST':
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            form.save()
+            username = form.cleaned_data.get('username')
+            raw_password = form.cleaned_data.get('password1')
+            user = authenticate(username=username, password=raw_password)
+            login(request, user)
+            messages.success(request, f'Your account has been created! You are now able to login.')
+            return redirect('login')
+    else:
+        form = UserCreationForm()
+    return render(request, 'registration/register.html', {'form': form})
+
+
+@login_required
+def profile(request):
+    if request.method == 'POST':
+        user_form = UserUpdateForm(request.POST, instance=request.user)
+        profile_form = ProfileUpdateForm(request.POST, request.FILES, instance=request.user.profile)
+        if user_form.is_valid() and profile_form.is_valid():
+            user_form.save()
+            profile_form.save()
+            messages.success(request, f'Your profile has been updated')
+            return redirect('profile')
+
+    else:
+        user_form = UserUpdateForm(instance=request.user)
+        profile_form = ProfileUpdateForm(instance=request.user.profile)
+
+    context = {'u_form':user_form, 'p_form':profile_form}
+    return render(request, 'registration/profile.html', context)
+
+
+
+
+@login_required
+def change_password(request):
+    if request.method == 'POST':
+        form = PasswordChangeForm(request.user, request.POST)
+        if form.is_valid():
+            user = form.save()
+            update_session_auth_hash(request, user)  # Important! used to validate the session and password
+            messages.success(request, 'Your password was successfully updated!')
+            return redirect('profile')
+        else:
+            messages.error(request, 'Please correct the error below.')
+    else:
+        form = PasswordChangeForm(request.user)
+    return render(request, 'registration/password_change.html', {
+        'form': form
+    })
+
+
+
+
+class UserBlogList_View(ListView):
+    model = Blog
+    template_name = 'blog/userBlog_ListView.html'
+    context_object_name = 'blogs'
+    paginate_by = 4
+
+    def get_queryset(self):
+        user = get_object_or_404(User, username=self.kwargs.get('username'))
+        return Blog.objects.filter(author=user).order_by('-posted_date')
+
+
+
+
+class MyBlogList_View(LoginRequiredMixin, ListView):
+    model = Blog
+    template_name = 'blog/userBlog_ListView.html'
+    context_object_name = 'blogs'
+    paginate_by = 4
+    extra_context={'heading': "My Blogs"}
+
+    def get_queryset(self):
+        user = get_object_or_404(User, username=self.request.user)
+        return Blog.objects.filter(author=user).order_by('-posted_date')
+
+
+
+def search(request):
+    query = request.GET['query']
+    if len(query) > 50:
+        blogs = Blog.objects.none()
+
+    else:
+        #  SQLITE PROBLEM
+        # blogTitle = Blog.objects.filter(title__icontains=query)
+        # blogContent = Blog.objects.filter(content__icontains=query)
+        # blogs = blogTitle.union(blogContent)
+
+        blogs = Blog.objects.filter(
+                                    Q(title__icontains=query) |
+                                    Q(author__username__icontains=query) |
+                                    Q(content__icontains=query)
+                                    )
+
+    if blogs.count() == 0:
+        messages.warning(request, f'No Results Found. Please refine your keywords')
+
+    context = {'title' : "Search Results",
+                'query' : query,
+                'blogs' : blogs}
+    return render(request, 'blog/search.html', context)
 
 
 

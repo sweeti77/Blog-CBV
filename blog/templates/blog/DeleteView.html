@@ -1,14 +1,17 @@
 {% extends 'blog/base.html' %}
-
-{%block content%}
-<hr>
-
-<br><br>
-    <h4>Are you sure to delete?? <span class="text-danger">{{ blog.title }}</span></h4>
-    <br><br>
-    <form method="POST">
-        {% csrf_token %}
-        <input type="submit" value="Yes, Delete" class="btn btn-danger">
-    </form>
-
-{%endblock%}
+{%load crispy_forms_tags %}
+{% block content %}
+<div class="content-section">
+  <form method="POST">
+    {% csrf_token %}
+    <fieldset class="form-group">
+      <legend class='border-bottom mb-4'>Delete Post</legend>
+      <h3>Are you sure you want to delete the post <span style="color:#006666">'{{ blog.title }}'</span></h3>
+    </fieldset>
+    <div class="form-group">
+        <button type="submit" class="btn btn-outline-danger">Delete</button>
+        <a class="btn btn-outline-secondary" href="{% url 'MyBlogList_View' %}">Cancel</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

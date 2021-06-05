@@ -13,14 +13,14 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = Path(__file__).resolve().parent.parent.parent
+BASE_DIR = Path(__file__).resolve().parent.parent
 
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'insert a secret key given by Django'
+SECRET_KEY = '9)f+1jpdyvlvk-cf85-l%7k)3kh5a1@trx@3)#l=@c)zq&c26^'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -37,7 +37,10 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'blog',
+
+    'crispy_forms',
+
+    'blog.apps.BlogConfig',
 ]
 
 MIDDLEWARE = [
@@ -114,8 +117,25 @@ USE_L10N = True
 
 USE_TZ = True
 
+LOGIN_URL = 'login'
+LOGIN_REDIRECT_URL = 'ListView'
+LOGOUT_REDIRECT_URL = "ListView"
+
+
+CRISPY_TEMPLATE_PACK = 'bootstrap4'
+
+
+
+# ACCOUNT_LOGOUT_REDIRECT_URL = 'home'
+
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
 STATIC_URL = '/static/'
+STATICFILES_DIRS = [BASE_DIR/'static']
+STATIC_ROOT = BASE_DIR / 'static_cdn'
+
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media/'

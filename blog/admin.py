@@ -1,3 +1,28 @@
 from django.contrib import admin
+from .models import Blog, Category, Profile
 
-# Register your models here.
+
+from django.contrib.admin.models import LogEntry
+
+LogEntry.objects.all().delete()
+
+
+admin.site.site_header = 'BlogAdministration'
+
+
+@admin.register(Blog)
+class BlogAdmin(admin.ModelAdmin):
+    prepopulated_fields = {'slug': ('title',)}
+    list_display = ['title', 'slug', 'posted_date', 'author']
+    list_filter = ['posted_date']
+    list_editable = ['slug']
+    search_fields = ['title']
+    readonly_fields = ['posted_date', 'updated_date']
+
+@admin.register(Category)
+class CategoryAdmin(admin.ModelAdmin):
+    prepopulated_fields = {'slug': ('title',)}
+
+
+
+admin.site.register(Profile)
