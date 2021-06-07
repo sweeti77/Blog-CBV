@@ -18,17 +18,17 @@
 
   {% for blog in blogs %}<br>
   <article class="media content-section">
-    <img class="rounded-circle article-img" src="{{ blog.author.profile.image.url }}">
+    <img class="rounded-circle profile-img" src="{{ blog.author.profile.image.url }}">
     <div class="media-body">
       <div class="article-metadata">
         <a class="mr-2" href="{% url 'UserBlogView' blog.author.username %}">{{ blog.author }}</a>
         <small class="text-muted">{{ blog.posted_date|date:"Y M d" }}</small>
       </div>
-      <h3><a class="article-title" href="{%url 'DetailView' blog.id %}">{{ blog.title|title }}</a></h3>
+      <h3><a class="article-title" href="{%url 'DetailView' blog.slug %}">{{ blog.title|title }}</a></h3>
       <img class='rounded-rectangle article-img' src="{{ blog.image.url }}">
       <p class="article-content">
         {{ blog.content|truncatechars:200|safe }}
-        <small><a class="mr-2"href="{%url 'DetailView' blog.id %}">Continue Reading--></a></small>
+        <small><a class="mr-2"href="{%url 'DetailView' blog.slug %}">Continue Reading--></a></small>
       </p>
     </div>
   </article>

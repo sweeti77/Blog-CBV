@@ -13,14 +13,22 @@
       <div class="article-metadata">
         <a class="mr-2" href="{% url 'UserBlogView' blog.author.username %}">{{ blog.author }}</a> in
         {%for category in blog.category.all%}
-        <a class="mr-2" href="{% url 'CategoryBlogView' category.slug %}">{{category.name}}</a>
+        <small><a class="mr-2" href="{% url 'CategoryBlogView' category.slug %}">{{category.name}}</a></small>
         {%endfor%}
         <small class="text-muted">{{ blog.posted_date|date:"Y M d" }} | {{blog.status}}</small>
-        <img class='rounded-rectangle article-img' src="{{ blog.image.url }}" style="float:right">
+        {% if request.user == blog.author %}
+        <div class='right' style="float:right">
+          <a class="article-title" href="{%url 'UpdateView' blog.slug %}">Edit</a> ||
+          <a class="article-title" href="{%url 'DeleteView' blog.slug %}">Delete</a>
+        </div>
+        {% endif %}
       </div>
       <h3><a class="article-title" href="{%url 'DetailView' blog.slug %}">{{ blog.title|title }}</a></h3>
-      <p class="article-content"></p>
-
+      <img class='rounded-rectangle article-img' src="{{ blog.image.url }}" style="float:right">
+      <p class="article-content">
+        {{ blog.content|truncatechars:200|safe }}
+        <small><a class="mr-2"href="{%url 'DetailView' blog.slug %}">Continue Reading--></a></small>
+      </p>
     </div>
   </article>
   {% endfor %}

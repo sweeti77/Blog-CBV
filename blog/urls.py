@@ -10,7 +10,10 @@ from .views import (
                 Delete_View,
                 UserBlogList_View,
                 MyBlogList_View,
+                AddCategory_View,
+                CategoryBlog_View,
 
+                index,
                 register,
                 profile,
                 change_password,
@@ -19,12 +22,18 @@ from .views import (
 
 urlpatterns = [
     path('create',Create_View.as_view(),name='CreateView'),
-    path('',List_View.as_view(),name='ListView'),
+    path('list',List_View.as_view(),name='ListView'),
     path('user/<str:username>/',UserBlogList_View.as_view(),name='UserBlogView'),
     path('myBlog/',MyBlogList_View.as_view(),name='MyBlogList_View'),
-    path('detail/<int:pk>/',Detail_View.as_view(),name='DetailView'),
-    path('update/<int:pk>/',Update_View.as_view(),name='UpdateView'),
-    path('delete/<int:pk>/',Delete_View.as_view(),name='DeleteView'),
+    path('detail/<slug:slug>/',Detail_View.as_view(),name='DetailView'),
+    path('update/<slug:slug>/',Update_View.as_view(),name='UpdateView'),
+    path('delete/<slug:slug>/',Delete_View.as_view(),name='DeleteView'),
+    path('add-category',AddCategory_View.as_view(),name='AddCategoryView'),
+    path('category/<slug:slug>/',CategoryBlog_View.as_view(),name='CategoryBlogView'),
+
+    path('', index, name='index'),
+
+
 
     path('search', search, name='search'),
 

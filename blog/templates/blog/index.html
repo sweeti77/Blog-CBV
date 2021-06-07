@@ -1,0 +1,52 @@
+{% extends 'blog/base.html' %}
+{% load static %}
+
+{%block content%}
+<div class="container py-5">
+    <div class="jumbotron text-white jumbotron-image shadow">
+      <h2 class="mb-4">
+        Jumbotron with background image
+      </h2>
+      <p class="mb-4">
+        Hey, check this out.
+      </p>
+      <a href="{% url 'register'%}" class="btn btn-primary">Get Started</a>
+    </div>
+</div>
+
+{% for blog in blogs %}<br>
+<article class="media content-section">
+  <img class="rounded-circle profile-img" src="{{ blog.author.profile.image.url }}">
+  <div class="media-body">
+    <div class="article-metadata">
+      <a class="mr-2" href="{% url 'UserBlogView' blog.author.username %}">{{ blog.author }}</a> in
+       {%for category in blog.category.all%}
+       <a class="mr-2" href="{% url 'CategoryBlogView' category.slug %}">{{category.name}}</a>
+       {%endfor%}
+      <small class="text-muted">{{ blog.posted_date|date:"Y M d" }}</small>
+      <img class='rounded-rectangle article-img' src="{{ blog.image.url }}" style="float:right">
+      <h3><a class="article-title" href="{%url 'DetailView' blog.slug %}">{{ blog.title|title }}</a></h3>
+    </div>
+
+  </div>
+</article>
+{% endfor %}
+{%endblock%}
+
+
+
+
+
+
+
+
+{% block sidebar %}
+<br>
+<small>DISCOVER MORE OF WHAT MATTERS TO YOU</small>
+{% for category in categories %}
+      <a class="btn btn-light my-1 mx-1 text-muted" href="{% url 'CategoryBlogView' category.slug %}">{{category.name}}</a>
+{% endfor %}
+<br>
+<small><a class="my-3" href="#">See all Topics</a></small>
+
+{% endblock %}

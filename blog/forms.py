@@ -11,12 +11,14 @@ class BlogForm(forms.ModelForm):
         widget=forms.CheckboxSelectMultiple
     )
 
-
-
     class Meta:
         model = Blog
         exclude = ['slug', 'posted_date', 'updated_date', 'author',]
 
+class CategoryForm(forms.ModelForm):
+    class Meta:
+        model = Category
+        exclude = ['slug']
 
 
 # updates username/email

@@ -12,32 +12,40 @@ def get_image_path(instance, filename):
 
 # def get_image():
 
+STATUS = (
+    ("Draft","Draft"),
+    ("Publish","Publish")
+)
+
 
 class Category(models.Model):
-    title = models.CharField(max_length=35, db_index=True)
+    name = models.CharField(max_length=35, db_index=True, unique=True)
     slug = models.SlugField(unique=True, max_length=35)
 
     class Meta:
-        ordering=('title',)
+        ordering=('name',)
         verbose_name = 'Category'
         verbose_name_plural = 'Categories'
 
     def __str__(self):
-        return self.title
+        return self.name
 
     def save(self, *args, **kwargs):
-        self.slug = slugify(self.title)
+        self.slug = slugify(self.name)
         super(Category, self).save(*args, **kwargs)
+
+
 
 class Blog(models.Model):
     category = models.ManyToManyField(Category)
     slug = models.SlugField(unique=True, max_length=35)
-    title = models.CharField(max_length=100)
+    title = models.CharField(unique=True, max_length=100)
     content = models.TextField(blank=False)
     image = models.ImageField(upload_to='blog', blank=True)
-    posted_date = models.DateField(default=timezone.now())
+    posted_date = models.DateField(auto_now_add=True)
     updated_date = models.DateField(blank=True, null=True)
     author = models.ForeignKey(User, on_delete=models.CASCADE)
+    status = models.CharField(max_length=10, choices=STATUS, default="Draft")
     class Meta:
         ordering=('title',)
 

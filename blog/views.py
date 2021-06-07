@@ -17,11 +17,12 @@ from django.contrib.auth import login, authenticate
 from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.forms import PasswordChangeForm
 
-from .models import Blog
-from .forms import BlogForm, UserUpdateForm, ProfileUpdateForm
+from .models import Blog, Category
+from .forms import BlogForm, CategoryForm, UserUpdateForm, ProfileUpdateForm
 
+from django.contrib.auth import get_user_model
 
-
+user = get_user_model()
 
 
 
@@ -30,23 +31,24 @@ from .forms import BlogForm, UserUpdateForm, ProfileUpdateForm
 
 class List_View(ListView):
     model = Blog
-    queryset = Blog.objects.order_by('-posted_date')
+    queryset = Blog.objects.filter(status="Publish").order_by('-posted_date')
     # ordering = ['-posted_date'] #same as above
+
     template_name = 'blog/ListView.html'
     context_object_name = 'blogs'
     paginate_by = 4
 
 
+
 class Detail_View(DetailView):
-    # queryset = Blog.objects.order_by('-date_time')
-    model = Blog #model/queryset is same thing(equivalent)
+    model = Blog
     template_name = 'blog/DetailView.html'
     context_object_name = 'blog'
 
     # just overriding the function. Works fine even without the function
     def get_object(self):
-        id = self.kwargs.get('pk')
-        return get_object_or_404(Blog, id=id)
+        slug = self.kwargs.get('slug')
+        return get_object_or_404(Blog, slug=slug)
 
 
 class Delete_View(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
@@ -83,8 +85,8 @@ class Update_View(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     success_url = '/myBlog'
 
     def get_object(self):
-        id = self.kwargs.get('pk')
-        return get_object_or_404(Blog, id=id)
+        slug = self.kwargs.get('slug')
+        return get_object_or_404(Blog, slug=slug)
 
     def test_func(self):
         blog = self.get_object()
@@ -158,14 +160,14 @@ class UserBlogList_View(ListView):
 
     def get_queryset(self):
         user = get_object_or_404(User, username=self.kwargs.get('username'))
-        return Blog.objects.filter(author=user).order_by('-posted_date')
+        return Blog.objects.filter(author=user, status="Publish").order_by('-posted_date')
 
 
 
 
 class MyBlogList_View(LoginRequiredMixin, ListView):
     model = Blog
-    template_name = 'blog/userBlog_ListView.html'
+    template_name = 'blog/myBlog_ListView.html'
     context_object_name = 'blogs'
     paginate_by = 4
     extra_context={'heading': "My Blogs"}
@@ -203,23 +205,55 @@ def search(request):
 
 
 
+class AddCategory_View(LoginRequiredMixin, CreateView):
+    form_class = CategoryForm
+    template_name = 'blog/AddCategoryView.html'
+    context_object_name = 'form'
+    # success_url = 'list'
+    # another way to override success_url(default -- get_absolute_url)
+    def get_success_url(self):
+        return '/'
 
-# FUNCTION-BASED VIEWS
 
-# def ListView(request):
-#     blogs = Blog.objects.all()
-#     context = {'blogs':blogs}
-#     return render(request, 'blog/ListView.html',context)
+class CategoryBlog_View(ListView):
+    model = Blog
+    template_name = 'blog/CategoryBlogView.html'
+    context_object_name = 'blogs'
+    paginate_by = 4
 
-# def CreateView(request):
-#     if request.method == 'POST':
-#         form = BlogForm(request.POST)
-#         if form.is_valid():
-#             form.save()
-#             return redirect('ListView')
-#         else:
-#             context ={'form':form}
-#             return render(request, 'blog/CreateView.html',context)
-#     form = BlogForm()
-#     context = {'form':form}
-#     return render(request, 'blog/CreateView.html',context)
+
+    def get_queryset(self):
+        category = get_object_or_404(Category, slug=self.kwargs.get('slug'))
+        return Blog.objects.filter(category=category).order_by('-posted_date')
+
+
+
+def index(request):
+    blogs = Blog.objects.filter(status="Publish").order_by('-posted_date')
+    categories = Category.objects.all()[:6]
+    context = {'blogs': blogs,
+                'categories' : categories}
+    return render(request, 'blog/index.html',context)
+
+
+"""
+FUNCTION-BASED VIEWS
+
+def ListView(request):
+    blogs = Blog.objects.all()
+    context = {'blogs':blogs}
+    return render(request, 'blog/ListView.html',context)
+
+def CreateView(request):
+    if request.method == 'POST':
+        form = BlogForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('ListView')
+        else:
+            context ={'form':form}
+            return render(request, 'blog/CreateView.html',context)
+    form = BlogForm()
+    context = {'form':form}
+    return render(request, 'blog/CreateView.html',context)
+"""

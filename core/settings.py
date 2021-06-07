@@ -119,7 +119,7 @@ USE_TZ = True
 
 LOGIN_URL = 'login'
 LOGIN_REDIRECT_URL = 'ListView'
-LOGOUT_REDIRECT_URL = "ListView"
+LOGOUT_REDIRECT_URL = "index"
 
 
 CRISPY_TEMPLATE_PACK = 'bootstrap4'

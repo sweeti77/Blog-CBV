@@ -2,10 +2,13 @@
 {%block content%}
 
 <article class="media content-section">
-  <img class='rounded-rectangle article-img mb-4' src="{{ blog.author.profile.image.url }}" alt=""/>
+  <img class='rounded-rectangle profile-img mb-4' src="{{ blog.author.profile.image.url }}" alt=""/>
   <div class="media-body">
     <div class="article-metadata">
-      <a class="mr-2" href="{% url 'UserBlogView' blog.author.username %}">{{ blog.author }}</a>
+      <a class="mr-2" href="{% url 'UserBlogView' blog.author.username %}">{{ blog.author }}</a> in
+      {%for category in blog.category.all%}
+      <a class="mr-2" href="{% url 'CategoryBlogView' category.slug %}">{{category.name}}</a>
+      {%endfor%}
       <small class="text-muted">{{ blog.posted_date|date:"Y M d" }}</small>
       <br>
     </div>

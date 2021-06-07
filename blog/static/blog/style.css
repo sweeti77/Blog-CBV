@@ -12,9 +12,9 @@ ul {
   margin: 0;
 }
 
-.bg-steel {
+/* .bg-steel {
   background-color: #5f788a;
-}
+} */
 
 .site-header .navbar-nav .nav-link {
   color: #cbd5db;
@@ -50,8 +50,16 @@ a.article-title:hover {
 }
 
 .article-img {
-  height: 65px;
-  width: 65px;
+  height: 175px;
+  width: 155px;
+  margin-right: 16px;
+  margin-left: 16px;
+
+}
+
+.profile-img {
+  height: 55px;
+  width: 55px;
   margin-right: 16px;
 }
 
@@ -79,6 +87,17 @@ a.article-title:hover {
   margin-bottom: 16px;
 }
 
+
 .account-heading {
   font-size: 2.5rem;
+}
+
+
+.jumbotron-image {
+  padding-top: 50px;
+  background : url('/static/blog/cover.jpg')50% 0 no-repeat fixed;
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  height: 100%;
 }
