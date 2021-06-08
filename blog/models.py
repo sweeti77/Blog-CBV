@@ -40,12 +40,14 @@ class Blog(models.Model):
     category = models.ManyToManyField(Category)
     slug = models.SlugField(unique=True, max_length=35)
     title = models.CharField(unique=True, max_length=100)
+    excerpt = models.CharField(max_length=100)
     content = models.TextField(blank=False)
     image = models.ImageField(upload_to='blog', blank=True)
     posted_date = models.DateField(auto_now_add=True)
     updated_date = models.DateField(blank=True, null=True)
     author = models.ForeignKey(User, on_delete=models.CASCADE)
     status = models.CharField(max_length=10, choices=STATUS, default="Draft")
+
     class Meta:
         ordering=('title',)
 

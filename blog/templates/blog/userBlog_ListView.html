@@ -19,7 +19,8 @@
         <img class='rounded-rectangle article-img' src="{{ blog.image.url }}" style="float:right">
       </div>
       <h3><a class="article-title" href="{%url 'DetailView' blog.slug %}">{{ blog.title|title }}</a></h3>
-      <p class="article-content"></p>
+      <small class="article-content text-muted">{{blog.excerpt}}</small>
+
 
     </div>
   </article>

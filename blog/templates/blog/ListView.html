@@ -15,6 +15,9 @@
       <small class="text-muted">{{ blog.posted_date|date:"Y M d" }}</small>
       <img class='rounded-rectangle article-img' src="{{ blog.image.url }}" style="float:right">
       <h3><a class="article-title" href="{%url 'DetailView' blog.slug %}">{{ blog.title|title }}</a></h3>
+      <small class="article-content text-muted">{{blog.excerpt}}</small>
+
+
     </div>
 
   </div>
