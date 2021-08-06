@@ -13,7 +13,7 @@ class BlogForm(forms.ModelForm):
 
     class Meta:
         model = Blog
-        exclude = ['slug', 'posted_date', 'updated_date', 'author',]
+        exclude = ['slug', 'posted_date', 'updated_date', 'author', 'likes', 'saved',]
 
 class CategoryForm(forms.ModelForm):
     class Meta:

@@ -18,6 +18,7 @@ from .views import (
                 profile,
                 change_password,
                 search,
+                likeView,
 )
 
 urlpatterns = [
@@ -30,6 +31,8 @@ urlpatterns = [
     path('delete/<slug:slug>/',Delete_View.as_view(),name='DeleteView'),
     path('add-category',AddCategory_View.as_view(),name='AddCategoryView'),
     path('category/<slug:slug>/',CategoryBlog_View.as_view(),name='CategoryBlogView'),
+
+    path('like/<int:pk>/', likeView, name='likeBlog'),
 
     path('', index, name='index'),
 

@@ -1,5 +1,8 @@
 from django.shortcuts import render, redirect, get_object_or_404
 
+from django.http import HttpResponseRedirect
+from django.urls import reverse
+
 from django.views.generic import (
         ListView, DetailView, CreateView, UpdateView, DeleteView)
 
@@ -44,11 +47,22 @@ class Detail_View(DetailView):
     model = Blog
     template_name = 'blog/DetailView.html'
     context_object_name = 'blog'
+    # extra_context={'total_likes': Blog.total_likes(self)}
 
     # just overriding the function. Works fine even without the function
-    def get_object(self):
-        slug = self.kwargs.get('slug')
-        return get_object_or_404(Blog, slug=slug)
+    # def get_object(self):
+    #     slug = self.kwargs.get('slug')
+    #     return get_object_or_404(Blog, slug=slug)
+
+    def get(self, request, **kwargs):
+        self.object = self.get_object()
+        context = self.get_context_data(object=self.object)
+        liked = False
+        if self.object.likes.filter(id=self.request.user.id).exists():
+            liked=True
+        context['liked'] = liked
+        return self.render_to_response(context)
+
 
 
 class Delete_View(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
@@ -145,9 +159,7 @@ def change_password(request):
             messages.error(request, 'Please correct the error below.')
     else:
         form = PasswordChangeForm(request.user)
-    return render(request, 'registration/password_change.html', {
-        'form': form
-    })
+    return render(request, 'registration/password_change.html', {'form': form})
 
 
 
@@ -227,6 +239,18 @@ class CategoryBlog_View(ListView):
         return Blog.objects.filter(category=category).order_by('-posted_date')
 
 
+def likeView(request, pk):
+    blog = get_object_or_404(Blog, pk=pk)
+    liked = False
+    if blog.likes.filter(id=request.user.id).exists():
+        blog.likes.remove(request.user)
+        liked = False
+    else:
+        blog.likes.add(request.user)
+        liked = True
+    return HttpResponseRedirect(reverse('DetailView', args=[str(blog.slug)]))
+
+
 
 def index(request):
     blogs = Blog.objects.filter(status="Publish").order_by('-posted_date')
@@ -234,6 +258,17 @@ def index(request):
     context = {'blogs': blogs,
                 'categories' : categories}
     return render(request, 'blog/index.html',context)
+
+
+
+
+
+
+
+
+
+
+
 
 
 """

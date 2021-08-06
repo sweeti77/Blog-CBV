@@ -47,12 +47,17 @@ class Blog(models.Model):
     updated_date = models.DateField(blank=True, null=True)
     author = models.ForeignKey(User, on_delete=models.CASCADE)
     status = models.CharField(max_length=10, choices=STATUS, default="Draft")
+    likes = models.ManyToManyField(User, related_name="user_likes")
+    saved = models.ManyToManyField(User, related_name="user_saved")
 
     class Meta:
         ordering=('title',)
 
     def __str__(self):
         return self.title
+
+    def total_likes(self):
+        return self.likes.count()
 
 
 
