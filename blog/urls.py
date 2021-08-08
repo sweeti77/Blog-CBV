@@ -18,7 +18,9 @@ from .views import (
                 profile,
                 change_password,
                 search,
-                likeView,
+                likeBlog,
+                saveBlog,
+                SavedListView,
 )
 
 urlpatterns = [
@@ -32,7 +34,10 @@ urlpatterns = [
     path('add-category',AddCategory_View.as_view(),name='AddCategoryView'),
     path('category/<slug:slug>/',CategoryBlog_View.as_view(),name='CategoryBlogView'),
 
-    path('like/<int:pk>/', likeView, name='likeBlog'),
+    path('like/<int:pk>/', likeBlog, name='likeBlog'),
+    path('save/<int:pk>/', saveBlog, name='saveBlog'),
+    path('saved-posts/', SavedListView.as_view(), name='SavedListView'),
+
 
     path('', index, name='index'),
 

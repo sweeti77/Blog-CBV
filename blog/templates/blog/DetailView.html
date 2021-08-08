@@ -1,33 +1,56 @@
-{% extends 'blog/base.html' %}
+{% extends 'blog/d_base.html' %}
 {%block content%}
 
 <article class="media content-section">
-  <img class='rounded-rectangle profile-img mb-4' src="{{ blog.author.profile.image.url }}" alt=""/>
-  <div class="media-body">
-    <div class="article-metadata">
-      <a class="mr-2" href="{% url 'UserBlogView' blog.author.username %}">{{ blog.author }}</a> in
-      {%for category in blog.category.all%}
-      <a class="mr-2" href="{% url 'CategoryBlogView' category.slug %}">{{category.name}}</a>
-      {%endfor%}
-      <small class="text-muted">{{ blog.posted_date|date:"Y M d" }}</small>
+  <div class="row text-center">
+    <div class="media-body">
+      <h1 class="article-title">{{blog.title|title}}</h1>
+      <h5 class="text-muted">{{ blog.excerpt }}</h5>
+      <div class="article-metadata text-muted">
+        <a class="article-metadata mb-4" href="{% url 'UserBlogView' blog.author.username %}">
+          <img class='rounded-circle profile-img' src="{{ blog.author.profile.image.url }}" alt=""/>
+        </a>
+        {{ blog.author }} in
+        {%for category in blog.category.all%}
+        <a class="mr-2" href="{% url 'CategoryBlogView' category.slug %}">{{category.name}}</a>
+        {%endfor%}
+        <small>{{ blog.posted_date|date:"M d" }}</small>
+      </div>
       <br>
-    </div>
-    <h3>{{blog.title|title}}</h3>
-    <img class='rounded article-img' src="{{ blog.image.url }}" alt="">
-    <p class="article-content">{{ blog.content|safe }}</p>
+      <!-- <h2>{{blog.title|title}}</h2> -->
+      <img class='rounded article-img mb-4' src="{{ blog.image.url }}" alt="">
+      <br>
+      <p class="article-content">{{ blog.content|safe }}</p>
 
-    <!-- Like/Unlike button -->
-    <form action="{% url 'likeBlog' blog.pk %}" method="post">
+      <!-- Like/Unlike button -->
+      <form action="{% url 'likeBlog' blog.pk %}" method="post">
+        {% csrf_token %}
+        {% if liked %}
+            <button class="btn" type="submit" name="blog_pk" value="{{ blog.pk }}">
+              <i class="fa fa-heart" style="color:red;"></i> UnLike
+            </button>
+        {% else %}
+            <button class="btn" type="submit" name="blog_pk" value="{{ blog.pk }}">
+              <i class="fa fa-heart-o" style="color:#444444;"></i> Like
+            </button>
+        {% endif %}{{ blog.total_likes }}
+      </form>
+    </div>
+  </div>
+
+  <!-- for saving blogs -->
+  <div class="media-body">
+    <form action="{% url 'saveBlog' blog.pk %}" method="post">
       {% csrf_token %}
-      {% if liked %}
-          <button class="btn btn-danger" type="submit" name="blog_pk" value="{{ blog.pk }}">
-            <i class="fa fa-heart"></i> UnLike
+      {% if save %}
+          <button class="btn" type="submit" name="blog_pk" value="{{ blog.pk }}">
+            <i class="fa fa-bookmark" style="color:red;"></i>
           </button>
       {% else %}
-          <button class="btn btn-primary" type="submit" name="blog_pk" value="{{ blog.pk }}">
-            <i class="fa fa-heart"></i> Like
+          <button class="btn" type="submit" name="blog_pk" value="{{ blog.pk }}">
+            <i class="fa fa-bookmark-o" style="color:#444444;"></i>
           </button>
-      {% endif %}  -- {{ blog.total_likes }} Like{{ blog.total_likes.count | pluralize }}
+      {% endif %}
     </form>
   </div>
 </article>

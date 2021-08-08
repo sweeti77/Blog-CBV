@@ -61,6 +61,11 @@ class Detail_View(DetailView):
         if self.object.likes.filter(id=self.request.user.id).exists():
             liked=True
         context['liked'] = liked
+
+        save = False
+        if self.object.saved.filter(id=self.request.user.id).exists():
+            save=True
+        context['save'] = save
         return self.render_to_response(context)
 
 
@@ -239,7 +244,7 @@ class CategoryBlog_View(ListView):
         return Blog.objects.filter(category=category).order_by('-posted_date')
 
 
-def likeView(request, pk):
+def likeBlog(request, pk):
     blog = get_object_or_404(Blog, pk=pk)
     liked = False
     if blog.likes.filter(id=request.user.id).exists():
@@ -249,6 +254,36 @@ def likeView(request, pk):
         blog.likes.add(request.user)
         liked = True
     return HttpResponseRedirect(reverse('DetailView', args=[str(blog.slug)]))
+
+
+def saveBlog(request, pk):
+    blog = get_object_or_404(Blog, pk=pk)
+    save = False
+    if blog.saved.filter(id=request.user.id).exists():
+        blog.saved.remove(request.user)
+        save = False
+    else:
+        blog.saved.add(request.user)
+        save = True
+    return HttpResponseRedirect(reverse('DetailView', args=[str(blog.slug)]))
+
+
+
+class SavedListView(LoginRequiredMixin, ListView):
+    model = Blog
+    template_name = 'blog/showSaved.html'
+    context_object_name = 'blogs'
+    paginate_by = 4
+    extra_context={'heading': "Saved Blogs"}
+
+    def get_queryset(self):
+        user = get_object_or_404(User, username=self.request.user)
+        return Blog.objects.filter(saved=user).order_by('-posted_date')
+
+# def showSaved(request):
+#     blogs = Blog.objects.filter(status="Publish").order_by('-posted_date')
+#     context = {'blogs': blogs, 'heading': "Saved Blogs"}
+#     return render(request, 'blog/showSaved.html',context)
 
 
 

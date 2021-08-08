@@ -2,6 +2,8 @@ body {
   background: #fafafa;
   color: #333333;
   margin-top: 5rem;
+  /* text-align: center;
+  margin: 0 auto; */
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -41,7 +43,7 @@ ul {
 }
 
 a.article-title:hover {
-  color: #428bca;
+  color: #305d85;
   text-decoration: none;
 }
 
@@ -50,17 +52,17 @@ a.article-title:hover {
 }
 
 .article-img {
-  height: 175px;
-  width: 155px;
+  height: 375px;
+  width: 755px;
   margin-right: 16px;
   margin-left: 16px;
 
 }
 
 .profile-img {
-  height: 55px;
-  width: 55px;
-  margin-right: 16px;
+  height: 30px;
+  width: 30px;
+  margin-right: 13px;
 }
 
 .article-metadata {
@@ -70,7 +72,7 @@ a.article-title:hover {
 }
 
 .article-metadata a:hover {
-  color: #333;
+  color: #333333;
   text-decoration: none;
 }
 
@@ -102,8 +104,8 @@ a.article-title:hover {
   height: 100%;
 }
 
-.dropdown-menu{
+.dropdown{
   /* width: 100%; */
   text-align: justify;
-  right: 0;
+  right: 35px;
 }
