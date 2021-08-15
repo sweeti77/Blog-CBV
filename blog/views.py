@@ -66,6 +66,7 @@ class Detail_View(DetailView):
         if self.object.saved.filter(id=self.request.user.id).exists():
             save=True
         context['save'] = save
+        context['is_authenticated'] = request.user.is_authenticated
         return self.render_to_response(context)
 
 
@@ -243,7 +244,7 @@ class CategoryBlog_View(ListView):
         category = get_object_or_404(Category, slug=self.kwargs.get('slug'))
         return Blog.objects.filter(category=category).order_by('-posted_date')
 
-
+@login_required
 def likeBlog(request, pk):
     blog = get_object_or_404(Blog, pk=pk)
     liked = False
@@ -255,7 +256,7 @@ def likeBlog(request, pk):
         liked = True
     return HttpResponseRedirect(reverse('DetailView', args=[str(blog.slug)]))
 
-
+@login_required
 def saveBlog(request, pk):
     blog = get_object_or_404(Blog, pk=pk)
     save = False

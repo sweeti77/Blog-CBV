@@ -27,11 +27,11 @@
         {% csrf_token %}
         {% if liked %}
             <button class="btn" type="submit" name="blog_pk" value="{{ blog.pk }}">
-              <i class="fa fa-heart" style="color:red;"></i> UnLike
+              <i class="fa fa-heart fa-lg" style="color:red;"></i> UnLike
             </button>
         {% else %}
             <button class="btn" type="submit" name="blog_pk" value="{{ blog.pk }}">
-              <i class="fa fa-heart-o" style="color:#444444;"></i> Like
+              <i class="fa fa-heart-o fa-lg" style="color:#444444;"></i> Like
             </button>
         {% endif %}{{ blog.total_likes }}
       </form>
@@ -44,11 +44,11 @@
       {% csrf_token %}
       {% if save %}
           <button class="btn" type="submit" name="blog_pk" value="{{ blog.pk }}">
-            <i class="fa fa-bookmark" style="color:red;"></i>
+            <i class="fa fa-bookmark fa-lg" style="color:red;"></i>
           </button>
       {% else %}
           <button class="btn" type="submit" name="blog_pk" value="{{ blog.pk }}">
-            <i class="fa fa-bookmark-o" style="color:#444444;"></i>
+            <i class="fa fa-bookmark-o fa-lg" style="color:#444444;"></i>
           </button>
       {% endif %}
     </form>

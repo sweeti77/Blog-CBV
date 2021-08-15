@@ -17,11 +17,17 @@ class BlogAdmin(admin.ModelAdmin):
     list_filter = ['posted_date']
     list_editable = ['status']
     search_fields = ['title']
-    readonly_fields = ['posted_date', 'updated_date']
+    readonly_fields = ['posted_date', 'updated_date', 'likes', 'saved', 'author']
+    ordering = ['-posted_date']
+    search_fields = ("title__contains", )
+    # exclude = ['posted_date', 'updated_date', 'author', 'likes', 'saved',]
+    # category, content, excerpt, image, status, title
+
 
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
     prepopulated_fields = {'slug': ('name',)}
+    search_fields = ("name__contains", )
 
 
 
