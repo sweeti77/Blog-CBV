@@ -17,7 +17,7 @@ class BlogAdmin(admin.ModelAdmin):
     list_filter = ['posted_date']
     list_editable = ['status']
     search_fields = ['title']
-    readonly_fields = ['posted_date', 'updated_date', 'likes', 'saved', 'author']
+    readonly_fields = ['posted_date', 'updated_date', 'likes', 'saved']
     ordering = ['-posted_date']
     search_fields = ("title__contains", )
     # exclude = ['posted_date', 'updated_date', 'author', 'likes', 'saved',]

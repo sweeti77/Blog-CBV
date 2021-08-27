@@ -1,9 +1,9 @@
-{% extends 'blog/base.html' %}
+{% extends 'blog/d_base.html' %}
 
 {%block content%}
 <h1>Search Results</h1>
 {% if blogs|length < 1 %}
-<p class="article-content">
+<p class="article-content justify-content-center">
   No Search Results<br>
   Your search query - <span style="color:#006666"><b>*{{ query }}*</b></span>  - did not match any documents.<br>
   Suggestions:
